@@ -1,7 +1,7 @@
 FROM node:18.20.8-slim
 
 WORKDIR /app
-COPY : package*.json ./
+COPY  package*.json ./
 RUN npm ci --omit=dev
 COPY . .
 RUN npm run build
