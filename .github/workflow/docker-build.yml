@@ -1,0 +1,44 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches:
+      - main  # or "master"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: npm run build
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: harshithajai
+          password: Bunny@2004
+
+      - name: Build Docker image
+        run: docker build -t harshithajai/zoom-clone-app:latest .
+
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
+      - name: Scan Docker image for vulnerabilities
+        run: trivy image harshithajai/zoom-clone-app:latest
+
+      - name: Push Docker image
+        run: docker push harshithajai/zoom-clone-app:latest
